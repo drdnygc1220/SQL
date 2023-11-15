@@ -70,4 +70,29 @@ public class StudentController {
 
     }
 
+    //!!!  getStudentById RequestParam *******************
+    @GetMapping("/query")// http://localhost:8080/students/query?id=1 +GET
+    public  ResponseEntity<Student> getStudent(@RequestParam("id") Long id){
+        Student student= studentService.findStudent(id);
+        return ResponseEntity.ok(student);
+    }
+
+    //!!! getStudentById PathVariable ***********************
+    @GetMapping("/{id}")//http://localhost:8080/students/1
+    public ResponseEntity<Student> getStudentWithPath(@PathVariable("id")Long id){
+       // Student student=studentService.findStudent(id);
+        return ResponseEntity.ok(studentService.findStudent(id));//ikinci olarak böyle yazabiliriz
+    }
+
+    //!!! DeleteStudentById ************************************
+    @DeleteMapping("/{id}")  //http://localhost:8080/students/3
+    //student degilde string gönderecgiz birşey dönmüyor çünkü silinecek
+    public ResponseEntity<String> deleteStudent(@PathVariable("id")Long id){
+        studentService.deleteStudent(id);
+
+        String message="Student is deleted successfuly";
+        return new ResponseEntity<>(message,HttpStatus.OK);//return ResponseEntity.ok(message)
+
+    }
+
 }

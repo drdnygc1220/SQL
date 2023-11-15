@@ -2,6 +2,7 @@ package com.tpe.service;
 
 import com.tpe.domain.Student;
 import com.tpe.exception.ConflictException;
+import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,19 @@ public class StudentService {//service içinde repository ile görüşecegiz.
         studentRepository.save(student);
 
 
+    }
+
+    //!!!  getStudentById RequestParam *******************
+    public Student findStudent(Long id) {
+       return studentRepository.findById(id).orElseThrow(()->
+               new ResourceNotFoundException("Student not found with id: "+id));
+    }
+
+    //!!! DeleteStudentById ************************************
+    public void deleteStudent(Long id) {
+        //burada kontrol etmem gereken birşey var mı?student nesnem DB varmı?
+        //olmayan bir öğrenciyi silmeye calışırsam nullpointerexception alırsın.
+        Student student=findStudent(id);//kullanılmış methodu(yukarıdaki) bir daha çagırıp alttaki methodları yazmadım
+        studentRepository.delete(student);
     }
 }
