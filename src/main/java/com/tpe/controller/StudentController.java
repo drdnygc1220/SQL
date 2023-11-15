@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -47,6 +44,7 @@ public class StudentController {
     private StudentService studentService;
 
     // !!! Get ALL STUDENTS
+    @GetMapping
     public ResponseEntity<List<Student>> getAll() {
          List<Student>students=studentService.getAll();
          return ResponseEntity.ok(students);
@@ -54,6 +52,7 @@ public class StudentController {
     }
 
     // !!! Create new Student
+    //create yapabilmem için bana bazı bilgiler lazım.
     @PostMapping  // http://localhost:8080/students + POST + JSON
     public ResponseEntity<Map<String,String>> createStudent(@Valid @RequestBody Student student){
         // @Valid : parametreler valid mi kontrol eder, bu örenekte Student

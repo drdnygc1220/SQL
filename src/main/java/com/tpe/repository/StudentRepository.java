@@ -22,4 +22,5 @@ import org.springframework.stereotype.Repository;
 @Repository//opsiyonel,kod okunabilirliği
 public interface StudentRepository extends JpaRepository<Student,Long> {
 
+    boolean existsByEmail(String email);
 }
