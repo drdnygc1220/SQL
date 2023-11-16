@@ -1,6 +1,7 @@
 package com.tpe.service;
 
 import com.tpe.domain.Student;
+import com.tpe.dto.StudentDTO;
 import com.tpe.exception.ConflictException;
 import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.repository.StudentRepository;
@@ -47,4 +48,30 @@ public class StudentService {//service içinde repository ile görüşecegiz.
         Student student=findStudent(id);//kullanılmış methodu(yukarıdaki) bir daha çagırıp alttaki methodları yazmadım
         studentRepository.delete(student);
     }
-}
+
+    //!!!Update Student *********************************************
+    public void updateStudent(Long id, StudentDTO studentDTO) {
+        //ID li öğrenci var mı?
+        Student student=findStudent(id);
+        //!!!email unique mi?
+        boolean emailExist=studentRepository.existsByEmail(studentDTO.getEmail());
+        if(emailExist && studentDTO.getEmail().equals(student.getEmail())){
+            throw  new ConflictException("Email is readly exist");
+        }
+        /*
+        1)kendi email mrc ,yenisindede mrc gir-->(UPDATE OLUR)
+        2)kendi email mrc, ahmet girdi(DB de zaten var)-->(CONFLICT)
+        3)kendi email mrc,mhmet girdi(DB de yok)-->(UPDATE OLUR)
+         */
+
+        // !!! DTO --> POJO
+        student.setName(studentDTO.getFirstName());
+        student.setLastName(studentDTO.getLastName());
+        student.setGrade(studentDTO.getGrade());
+        student.setEmail(studentDTO.getEmail());
+        student.setPhoneNumber(studentDTO.getPhoneNumber());
+
+        studentRepository.save(student);
+    }
+    }
+

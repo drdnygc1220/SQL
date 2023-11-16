@@ -1,6 +1,7 @@
 package com.tpe.controller;
 
 import com.tpe.domain.Student;
+import com.tpe.dto.StudentDTO;
 import com.tpe.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,6 +86,7 @@ public class StudentController {
     }
 
     //!!! DeleteStudentById ************************************
+    //id değişken oldugu için süslü parantez kullanıyoruz.
     @DeleteMapping("/{id}")  //http://localhost:8080/students/3
     //student degilde string gönderecgiz birşey dönmüyor çünkü silinecek
     public ResponseEntity<String> deleteStudent(@PathVariable("id")Long id){
@@ -92,6 +94,17 @@ public class StudentController {
 
         String message="Student is deleted successfuly";
         return new ResponseEntity<>(message,HttpStatus.OK);//return ResponseEntity.ok(message)
+
+    }
+    //!!! Update Student ******************************
+    //post:sıfırdan bir veriyi güncellemek için
+    //put:verilen bir veriyi güncellemek için
+    @PutMapping("/{id}")//http://localhost:8080/student/1 +PUT +JSON
+    public ResponseEntity<String>updateStudent(@PathVariable Long id,
+                                               @Valid @RequestBody StudentDTO studentDTO){
+        studentService.updateStudent(id,studentDTO);
+        String message="Student is update Successfully";
+        return new ResponseEntity<>(message,HttpStatus.OK);//200
 
     }
 
