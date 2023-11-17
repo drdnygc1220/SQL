@@ -6,62 +6,60 @@ import com.tpe.exception.ConflictException;
 import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class StudentService {//service içinde repository ile görüşecegiz.
+public class StudentService {
+
     @Autowired
     private StudentRepository studentRepository;
 
-    //!!! Get ALL STUDENTS*****************************
+    // Not : Get ALL STUDENTS ************************
     public List<Student> getAll() {
 
-       return studentRepository.findAll();//findAll JpaRepositoryden geliyor.
+        return studentRepository.findAll();
     }
 
-    // !!! Create new Student***************************
+    // Not: Create new Student ************************
     public void createStudent(Student student) {
-        //kontrol etmem gereken birşey var mı? önce buna bakılmalı...
-        //unique olan degerden ögrenci önceden kaydedilmiş mi? Ama önce unique deger varmı buna bakmalıyız.
 
-    //!!! email unique mi kontrolü
+        //!!! email unique mi kontrolu
         if(studentRepository.existsByEmail(student.getEmail())){
-            throw new ConflictException("Email is already exist ");
+            throw  new ConflictException("Email is already exist");
         }
         studentRepository.save(student);
-
-
     }
 
-    //!!!  getStudentById RequestParam *******************
+    // Not: getStudentById RequestParam **********************
     public Student findStudent(Long id) {
-       return studentRepository.findById(id).orElseThrow(()->
-               new ResourceNotFoundException("Student not found with id: "+id));
+        return studentRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException("Student not found with id : " + id));
     }
 
-    //!!! DeleteStudentById ************************************
+    // Not: DeleteStudentById ********************************
     public void deleteStudent(Long id) {
-        //burada kontrol etmem gereken birşey var mı?student nesnem DB varmı?
-        //olmayan bir öğrenciyi silmeye calışırsam nullpointerexception alırsın.
-        Student student=findStudent(id);//kullanılmış methodu(yukarıdaki) bir daha çagırıp alttaki methodları yazmadım
+        // !!! Acaba yukarda verilen id li student nesnem DB de var mi kontrolu !!!
+        Student student = findStudent(id);
         studentRepository.delete(student);
     }
 
-    //!!!Update Student *********************************************
+    //Not: Update Student ************************************
     public void updateStudent(Long id, StudentDTO studentDTO) {
-        //ID li öğrenci var mı?
-        Student student=findStudent(id);
-        //!!!email unique mi?
-        boolean emailExist=studentRepository.existsByEmail(studentDTO.getEmail());
-        if(emailExist && studentDTO.getEmail().equals(student.getEmail())){
-            throw  new ConflictException("Email is readly exist");
+        //!!! id'li ogrenci var mi ??
+        Student student = findStudent(id);
+        //!!! email unique mi ??
+        boolean emailExist = studentRepository.existsByEmail(studentDTO.getEmail());
+        if(emailExist && !studentDTO.getEmail().equals(student.getEmail())){
+            throw new ConflictException("Email is already exist");
         }
         /*
-        1)kendi email mrc ,yenisindede mrc gir-->(UPDATE OLUR)
-        2)kendi email mrc, ahmet girdi(DB de zaten var)-->(CONFLICT)
-        3)kendi email mrc,mhmet girdi(DB de yok)-->(UPDATE OLUR)
+               1) kendi email mrc, yenisindede mrc gir --> ( UPDATE OLUR )
+               2) kendi email mrc, ahmet girdi ( DB de zaten var) --> ( CONFLICT )
+               3) kendi email mrc, mhmet girdi ( DB de YOk ) --> ( UPDATE OLUR )
          */
 
         // !!! DTO --> POJO
@@ -73,5 +71,22 @@ public class StudentService {//service içinde repository ile görüşecegiz.
 
         studentRepository.save(student);
     }
+
+    //Not: getAllWithPage() ***********************************
+    public Page<Student> getAllWithPage(Pageable pageable) {
+
+        return studentRepository.findAll(pageable);
     }
 
+    // Not: GetByLastName() ************************************
+    public List<Student> findStudentByLastName(String lastName) {
+
+        return studentRepository.findByLastName(lastName);
+    }
+
+    //Not: GetStudentByGrade( with JPQL ( Java Persistance Query Language) ) ******
+    public List<Student> getStudentsEqualsGrade(Integer grade) {
+
+        return studentRepository.findAllEqualsGrade(grade);
+    }
+}
