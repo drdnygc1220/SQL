@@ -5,6 +5,8 @@ import com.tpe.dto.StudentDTO;
 import com.tpe.exception.ConflictException;
 import com.tpe.exception.ResourceNotFoundException;
 import com.tpe.repository.StudentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 public class StudentService {
+
+    Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     @Autowired
     private StudentRepository studentRepository;
@@ -29,7 +33,9 @@ public class StudentService {
 
         //!!! email unique mi kontrolu
         if(studentRepository.existsByEmail(student.getEmail())){
+            logger.warn("---------------- Conflict Exception : Email is already exist");
             throw  new ConflictException("Email is already exist");
+
         }
         studentRepository.save(student);
     }
@@ -55,6 +61,7 @@ public class StudentService {
         boolean emailExist = studentRepository.existsByEmail(studentDTO.getEmail());
         if(emailExist && !studentDTO.getEmail().equals(student.getEmail())){
             throw new ConflictException("Email is already exist");
+
         }
         /*
                1) kendi email mrc, yenisindede mrc gir --> ( UPDATE OLUR )
